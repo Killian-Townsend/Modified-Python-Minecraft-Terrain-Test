@@ -150,7 +150,7 @@ def init(sd, sz, r):
     # Temp/Perc Graph
     sys.stdout.write("\r\rGenerating"+" "*(58-15)+"\n")
     pbar.progress(60)
-    im = np.array(Image.open("output/TP_map.png"))[:, :, :3]
+    im = np.array(Image.open("./output/TP_map.png"))[:, :, :3]
     biomes = np.zeros((256, 256))
     biome_names = [
       "desert",
@@ -272,6 +272,7 @@ def histeq(img,  alpha=1):
 def average_cells(vor, data):
     # Returns the average value of data inside every voronoi cell
     size = vor.shape[0]
+    print(str(size))
     count = np.max(vor)+1
 
     sum = np.zeros(count)
