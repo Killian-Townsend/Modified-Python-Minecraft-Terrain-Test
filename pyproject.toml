@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "repl_python3_MinecraftTerrainTest"
+name = "MinecraftTerrainTest"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = ["Killian Townsend <oasisscript87@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"

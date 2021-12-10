@@ -15,37 +15,30 @@ n = 0
 
 def init(sd, sz, r):
     print("Generating...")
-    print("--------------------")
-    sys.stdout.write("Generating")
     pbar.startProgress("")
     # Generating Seed
-    sys.stdout.write("\r\rGenerating Seed")
     pbar.progress(5)
     map_seed = sd
     size = sz
     n = r
     np.random.seed(map_seed)
     # Mapping Points
-    sys.stdout.write("\r\rMapping Points")
     pbar.progress(10)
     points = np.random.randint(0, size, (514, 2))
     # Creating Voronoi Diagram
-    sys.stdout.write("Creating Voronoi Diagram")
     pbar.progress(15)
     vor = voronoi(points, size)
     vor_map = voronoi_map(vor, size)
     fig = plt.figure(dpi=150, figsize=(4, 4))
     plt.scatter(*points.T, s=1)
     # Relaxing Voronoi
-    sys.stdout.write("Relaxing Voronoi")
     pbar.progress(20)
     points = relax(points, size, k=100)
     vor = voronoi(points, size)
     vor_map = voronoi_map(vor, size)
     fig = plt.figure(dpi=150, figsize=(4, 4))
     plt.scatter(*points.T, s=1)
-    # Blurring Voronoi Borders
-    sys.stdout.write("Blurring Voronoi Borders")
+    # Bluring Voronoi Borders
     pbar.progress(25)
     boundary_displacement = 8
     boundary_noise = np.dstack([noise_map(size, 32, 200, octaves=8), noise_map(size, 32, 250, octaves=8)])
@@ -62,8 +55,7 @@ def init(sd, sz, r):
     axes[0].imshow(vor_map)
     axes[1].imshow(blurred_vor_map)
     vor_map = blurred_vor_map
-    # Creating Temperature/Precipitation Maps
-    sys.stdout.write("Creating Temperature/Precipitation Maps")
+    # Creating Temperature/Perciptation Maps
     pbar.progress(30)
     temperature_map = noise_map(size, 2, 10)
     precipitation_map = noise_map(size, 2, 20)
@@ -114,11 +106,7 @@ def init(sd, sz, r):
     hist2d = np.interp(hist2d, (hist2d.min(), hist2d.max()), (0, 1))
     hist2d = expit(hist2d/0.1)
     axes[1].imshow(hist2d, cmap="plasma")
-    axes[1].set_xticks([0, 128, 256, 3
-    sys.stdout.write("Generating")
-    sys.stdout.write("Generating")
-    sys.stdout.write("Generating")
-    sys.stdout.write("Generating")85, 511])
+    axes[1].set_xticks([0, 128, 256, 385, 511])
     axes[1].set_xticklabels([-1, -0.5, 0, 0.5, 1])
     axes[1].set_yticks([0, 128, 256, 385, 511])
     axes[1].set_yticklabels([1, 0.5, 0, -0.5, -1])
