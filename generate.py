@@ -14,30 +14,30 @@ size = 0
 n = 0
 
 def init(sd, sz, r):
-    print("Generating...")
-    print("--------------------")
-    sys.stdout.write("Generating")
+    sys.stdout.write("Generating...\n")
+    sys.stdout.write("--------------------\n")
+    sys.stdout.write("Generating"+" "*(58-10)+"\n")
     pbar.startProgress("")
     # Generating Seed
-    sys.stdout.write("\r\rGenerating Seed")
-    pbar.progress(5)
+    sys.stdout.write("\r\rGenerating Seed"+" "*(58-15)+"\n")
+    pbar.progress(2)
     map_seed = sd
     size = sz
     n = r
     np.random.seed(map_seed)
     # Mapping Points
-    sys.stdout.write("\r\rMapping Points")
-    pbar.progress(10)
+    sys.stdout.write("\r\rMapping Points"+" "*(58-14)+"\n")
+    pbar.progress(4)
     points = np.random.randint(0, size, (514, 2))
     # Creating Voronoi Diagram
-    sys.stdout.write("Creating Voronoi Diagram")
-    pbar.progress(15)
+    sys.stdout.write("\r\rCreating Voronoi Diagram"+" "*(58-24)+"\n")
+    pbar.progress(10)
     vor = voronoi(points, size)
     vor_map = voronoi_map(vor, size)
     fig = plt.figure(dpi=150, figsize=(4, 4))
     plt.scatter(*points.T, s=1)
     # Relaxing Voronoi
-    sys.stdout.write("Relaxing Voronoi")
+    sys.stdout.write("\r\rRelaxing Voronoi"+" "*(58-16)+"\n")
     pbar.progress(20)
     points = relax(points, size, k=100)
     vor = voronoi(points, size)
@@ -45,8 +45,8 @@ def init(sd, sz, r):
     fig = plt.figure(dpi=150, figsize=(4, 4))
     plt.scatter(*points.T, s=1)
     # Blurring Voronoi Borders
-    sys.stdout.write("Blurring Voronoi Borders")
-    pbar.progress(25)
+    sys.stdout.write("\r\rBlurring Voronoi Borders"+" "*(58-24)+"\n")
+    pbar.progress(30)
     boundary_displacement = 8
     boundary_noise = np.dstack([noise_map(size, 32, 200, octaves=8), noise_map(size, 32, 250, octaves=8)])
     boundary_noise = np.indices((size, size)).T + boundary_displacement*boundary_noise
@@ -63,8 +63,8 @@ def init(sd, sz, r):
     axes[1].imshow(blurred_vor_map)
     vor_map = blurred_vor_map
     # Creating Temperature/Precipitation Maps
-    sys.stdout.write("Creating Temperature/Precipitation Maps")
-    pbar.progress(30)
+    sys.stdout.write("\r\rCreating Temperature/Precipitation Maps"+" "*(58-39)+"\n")
+    pbar.progress(35)
     temperature_map = noise_map(size, 2, 10)
     precipitation_map = noise_map(size, 2, 20)
     fig, axes = plt.subplots(1, 2)
@@ -75,7 +75,8 @@ def init(sd, sz, r):
     axes[1].imshow(precipitation_map, cmap="YlGnBu")
     axes[1].set_title("Precipitation Map")
     # Smoothing Out Temp/Perc Histograms
-    pbar.progress(35)
+    sys.stdout.write("\r\rSmoothing Out Temp/Prec Histograms"+" "*(58-34)+"\n")
+    pbar.progress(40)
     fig, axes = plt.subplots(1, 2)
     fig.set_dpi(150)
     fig.set_size_inches(8, 4)
@@ -96,7 +97,8 @@ def init(sd, sz, r):
     axes[1].set_yticks([0, 128, 256, 385, 511])
     axes[1].set_yticklabels([1, 0.5, 0, -0.5, -1])
     # Further Flattening Temp/Perc Histograms
-    pbar.progress(40)
+    sys.stdout.write("\r\rFurther Flattening Temp/Perc Histograms"+" "*(58-39)+"\n")
+    pbar.progress(45)
     uniform_temperature_map = histeq(temperature_map, alpha=0.33)
     uniform_precipitation_map = histeq(precipitation_map, alpha=0.33)
     fig, axes = plt.subplots(1, 2)
@@ -114,18 +116,15 @@ def init(sd, sz, r):
     hist2d = np.interp(hist2d, (hist2d.min(), hist2d.max()), (0, 1))
     hist2d = expit(hist2d/0.1)
     axes[1].imshow(hist2d, cmap="plasma")
-    axes[1].set_xticks([0, 128, 256, 3
-    sys.stdout.write("Generating")
-    sys.stdout.write("Generating")
-    sys.stdout.write("Generating")
-    sys.stdout.write("Generating")85, 511])
+    axes[1].set_xticks([0, 128, 256, 385, 511])
     axes[1].set_xticklabels([-1, -0.5, 0, 0.5, 1])
     axes[1].set_yticks([0, 128, 256, 385, 511])
     axes[1].set_yticklabels([1, 0.5, 0, -0.5, -1])
     temperature_map = uniform_temperature_map
     precipitation_map = uniform_precipitation_map
     # Averaging Temp/Perc Cells
-    pbar.progress(45)
+    sys.stdout.write("\r\rAveraging Temp/Perc Cells"+" "*(58-25)+"\n")
+    pbar.progress(50)
     temperature_cells = average_cells(vor_map, temperature_map)
     precipitation_cells = average_cells(vor_map, precipitation_map)
     temperature_map = fill_cells(vor_map, temperature_cells)
@@ -138,7 +137,8 @@ def init(sd, sz, r):
     ax[1].imshow(precipitation_map, cmap="Blues")
     ax[1].set_title("Precipitation")
     # Performing Temp/Prec Map Quantization
-    pbar.progress(50)
+    sys.stdout.write("\r\rPerforming Temp/Perc Map Quantization"+" "*(58-37)+"\n")
+    pbar.progress(55)
     quantize_temperature_cells = quantize(temperature_cells, n)
     quantize_precipitation_cells = quantize(precipitation_cells, n)
     quantize_temperature_map = fill_cells(vor_map, quantize_temperature_cells)
@@ -147,14 +147,59 @@ def init(sd, sz, r):
     precipitation_cells = quantize_precipitation_cells
     temperature_map = quantize_temperature_map
     precipitation_map = quantize_precipitation_map
-    # Averaging Temp/Perc Cells
-    pbar.progress(55)
-    # Averaging Temp/Perc Cells
+    # Temp/Perc Graph
+    sys.stdout.write("\r\rGenerating"+" "*(58-15)+"\n")
     pbar.progress(60)
+    im = np.array(Image.open("output/TP_map.png"))[:, :, :3]
+    biomes = np.zeros((256, 256))
+    biome_names = [
+      "desert",
+      "savanna",
+      "tropical_woodland",
+      "tundra",
+      "seasonal_forest",
+      "rainforest",
+      "temperate_forest",
+      "temperate_rainforest",
+      "boreal_forest"
+    ]
+    biome_colors = [
+      [255, 255, 178],
+      [184, 200, 98],
+      [188, 161, 53],
+      [190, 255, 242],
+      [106, 144, 38],
+      [33, 77, 41],
+      [86, 179, 106],
+      [34, 61, 53],
+      [35, 114, 94]
+    ]
+    for i, color in enumerate(biome_colors):
+      indices = np.where(np.all(im == color, axis=-1))
+      biomes[indices] = i 
+    biomes = np.flip(biomes, axis=0).T
+    fig = plt.figure(dpi=150, figsize=(4, 4))
+    plt.imshow(biomes)
+    plt.title("Temperature–Precipitation graph")
+    # Creating Biome Map
+    sys.stdout.write("\r\rCreating Biome Map"+" "*(58-18)+"\n")
+    pbar.progress(80)
+    n = len(temperature_cells)
+    biome_cells = np.zeros(n, dtype=np.uint32)
+    for i in range(n):
+      temp, precip = temperature_cells[i], precipitation_cells[i]
+      biome_cells[i] = biomes[temp, precip] 
+    biome_map = fill_cells(vor_map, biome_cells).astype(np.uint32)
+    biome_color_map = color_cells(biome_map, biome_colors)
+    fig = plt.figure(figsize=(5, 5), dpi=150)
+    plt.imshow(biome_color_map)
+    # Averaging Temp/Perc Cells
+    sys.stdout.write("\r\rGenerating"+" "*(58-15)+"\n")
+    pbar.progress(80)
 
-  
-    pbar.progress(100)
-    print("Done!")
+    
+    pbar.endProgress()
+    sys.stdout.write("Done!")
 
 
 

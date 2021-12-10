@@ -2,17 +2,17 @@ import sys
 
 def startProgress(title):
     global progress_x
-    sys.stdout.write(title + ": [" + "-"*40 + "]" + chr(8)*41)
+    sys.stdout.write("[" + "-"*50 + "]")
     sys.stdout.flush()
     progress_x = 0
 
 def progress(x):
     global progress_x
-    x = int(x * 40 // 100)
-    sys.stdout.write("#" * (x - progress_x))
+    progress_x = int(x * 50 // 100)
+    sys.stdout.write("["+("-"*50)+"]"+" : "+str(x)+"%")
+    sys.stdout.write("\r["+("="*(progress_x-1))+">")
     sys.stdout.flush()
-    progress_x = x
 
 def endProgress():
-    sys.stdout.write("#" * (40 - progress_x) + "]\n")
+    sys.stdout.write("\n[" + "="*50 + "]")
     sys.stdout.flush()
